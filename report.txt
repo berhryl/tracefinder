@@ -1,0 +1,8 @@
+============ LOG ANALYSIS REPORT ============
+Total Valid Entries Processed: 2
+Total Malformed Lines Flagged: 0
+Critical Errors Found: 1
+
+--- Critical Error Details ---
+[2026-09-15 10:05:23] [ERROR] Database connection failed
+=============================================

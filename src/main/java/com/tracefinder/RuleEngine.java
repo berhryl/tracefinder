@@ -5,37 +5,28 @@ import java.util.List;
 
 public class RuleEngine {
 
-    public List<LogEntry> filterByLevel(List<LogEntry> entries, String level) {
-        List<LogEntry> filtered = new ArrayList<>();
-        for (LogEntry entry : entries) {
-            if (entry.getLogLevel().equalsIgnoreCase(level)) {
-                filtered.add(entry);
-            }
-        }
-        return filtered;
-    }
+    /**
+     * Filters log entries to find critical errors (ERROR level or containing critical failure keywords).
+     * 
+     * @param entries List of LogEntry objects to analyze
+     * @return List of critical LogEntry objects
+     */
+    public List<LogEntry> findCriticalErrors(List<LogEntry> entries) {
+        List<LogEntry> criticalErrors = new ArrayList<>();
 
-    public void generateReport(List<LogEntry> entries, List<MalformedLine> malformed) {
-        System.out.println("================ LOG ANALYSIS REPORT ================");
-        System.out.println("Total Valid Entries Processed: " + entries.size());
-        System.out.println("Total Malformed Lines Flagged: " + malformed.size());
-        
-        List<LogEntry> errors = filterByLevel(entries, "ERROR");
-        System.out.println("Critical Errors Found: " + errors.size());
-        
-        if (!errors.isEmpty()) {
-            System.out.println("\n--- Critical Error Details ---");
-            for (LogEntry error : errors) {
-                System.out.println(error);
+        if (entries == null) {
+            return criticalErrors;
+        }
+
+        for (LogEntry entry : entries) {
+            // Flag entries with ERROR level or critical error messages
+            if ("ERROR".equalsIgnoreCase(entry.getLogLevel()) || 
+                "CRITICAL".equalsIgnoreCase(entry.getLogLevel()) ||
+                (entry.getMessage() != null && entry.getMessage().toLowerCase().contains("failed"))) {
+                criticalErrors.add(entry);
             }
         }
-        
-        if (!malformed.isEmpty()) {
-            System.out.println("\n--- Malformed Lines Details ---");
-            for (MalformedLine line : malformed) {
-                System.out.println("Line " + line.getLineNumber() + ": " + line.getRawContent());
-            }
-        }
-        System.out.println("====================================================");
+
+        return criticalErrors;
     }
 }
