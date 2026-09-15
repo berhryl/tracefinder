@@ -1,40 +1,30 @@
 package com.tracefinder;
 
-import java.time.LocalDateTime;
-
 public class LogEntry {
-    private LocalDateTime timestamp;
-    private String level;
-    private String sourceIp;
-    private String target;
-    private String action;
+    private String timestamp;
+    private String logLevel;
+    private String message;
 
-    public LogEntry(LocalDateTime timestamp, String level, String sourceIp,
-                    String target, String action) {
+    public LogEntry(String timestamp, String logLevel, String message) {
         this.timestamp = timestamp;
-        this.level = level;
-        this.sourceIp = sourceIp;
-        this.target = target;
-        this.action = action;
+        this.logLevel = logLevel;
+        this.message = message;
     }
 
-    public LocalDateTime getTimestamp() {
+    public String getTimestamp() {
         return timestamp;
     }
 
-    public String getLevel() {
-        return level;
+    public String getLogLevel() {
+        return logLevel;
     }
 
-    public String getSourceIp() {
-        return sourceIp;
+    public String getMessage() {
+        return message;
     }
 
-    public String getTarget() {
-        return target;
-    }
-
-    public String getAction() {
-        return action;
+    @Override
+    public String toString() {
+        return "[" + timestamp + "] [" + logLevel + "] " + message;
     }
 }

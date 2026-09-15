@@ -11,7 +11,6 @@ public class LogParser {
     private final List<MalformedLine> malformedLines = new ArrayList<>();
 
     public void parseFile(String filePath) {
-        // Clear previous results before parsing a new file
         logEntries.clear();
         malformedLines.clear();
 
@@ -21,34 +20,26 @@ public class LogParser {
 
             while ((line = reader.readLine()) != null) {
                 lineNumber++;
+                line = line.trim();
+                if (line.isEmpty()) continue;
 
-                // Skip completely empty lines
-                if (line.trim().isEmpty()) {
-                    continue;
-                }
+                // Format: YYYY-MM-DD HH:MM:SS [LEVEL] Message
+                if (line.matches("^\\d{4}-\\d{2}-\\d{2}\\s+\\d{2}:\\d{2}:\\d{2}\\s+\\[[A-Z]+\\].*")) {
+                    int firstBracket = line.indexOf('[');
+                    int lastBracket = line.indexOf(']');
 
-                // Split line assuming standard log format: "TIMESTAMP LEVEL MESSAGE" (e.g. "2026-09-15 INFO System started")
-                String[] parts = line.split(" ", 3);
-
-                // Validation check: line must have at least 3 parts (Timestamp, Level, Message)
-                if (parts.length < 3 || isMalformedLevel(parts[1])) {
-                    malformedLines.add(new MalformedLine(lineNumber, line));
-                } else {
-                    String timestamp = parts[0];
-                    String logLevel = parts[1];
-                    String message = parts[2];
+                    String timestamp = line.substring(0, firstBracket).trim();
+                    String logLevel = line.substring(firstBracket + 1, lastBracket).trim();
+                    String message = line.substring(lastBracket + 1).trim();
 
                     logEntries.add(new LogEntry(timestamp, logLevel, message));
+                } else {
+                    malformedLines.add(new MalformedLine(lineNumber, line));
                 }
             }
         } catch (IOException e) {
             System.err.println("Error reading log file: " + e.getMessage());
         }
-    }
-
-    // Helper method to validate standard log levels
-    private boolean isMalformedLevel(String level) {
-        return !level.matches("INFO|WARN|ERROR|DEBUG|TRACE");
     }
 
     public List<LogEntry> getLogEntries() {
